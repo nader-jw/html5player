@@ -1,3 +1,5 @@
+Forked to swap player with one supporting more browsers (via Flash).
+
 An HTML 5 Player for Vistar Media assets.
 
 Documentation can be found here:

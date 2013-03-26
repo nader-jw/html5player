@@ -58,13 +58,29 @@ module.exports = class PlayQueue extends FillingQueue
         this.sendProofOfPlay(ad.proof_of_play_url)
       , duration)
     else if ad.mime_type.match(/^video\//)
-      @$videoPlayer.attr('src', ad.asset_url)
-      @$videoPlayer.show()
-      @$videoPlayer.get(0).play()
-      @$videoPlayer.bind('ended', =>
-        this.sendProofOfPlay(ad.proof_of_play_url)
-        this.play()
-      )
+      # utilizing JwPlayer to bring in FF support
+      if not @loaded
+        @jwplayer = jwplayer(@$videoPlayer[0]).setup
+          file: ad.asset_url
+          image: ad.thumb_url
+          width: 1280 # ad.width appears to contain incorrect value
+          height: 720 # ad.height appears to contain incorrect value
+        @jwplayer.onComplete(=>
+          @play()
+          @sendProofOfPlay(ad.proof_of_play_url)
+        )
+        @jwplayer.onError(=>
+          @play()
+          @expire(ad.expiration.url)
+        )
+        @jwplayer.setControls(false)
+        @jwplayer.setMute(false)
+      else
+        @jwplayer.load [
+          file: ad.asset_url
+          image: ad.thumb_url
+        ]
+      @jwplayer.play()
     else
-      this.expire(ad.expiration.url)
-      this.play()
+      @expire(ad.expiration.url)
+      @play()

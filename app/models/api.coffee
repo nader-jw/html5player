@@ -1,5 +1,6 @@
 module.exports = class Api
-  hasMp4 = navigator.userAgent.indexOf("AppleWebKit") > -1 and navigator.mimeTypes["video/mp4"]
+  # Always use video, by bringing full browser support through third-party libraries
+  hasMp4 = true
 
   constructor: (@config) ->
     @request = """{
